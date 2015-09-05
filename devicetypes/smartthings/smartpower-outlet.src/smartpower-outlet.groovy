@@ -28,6 +28,9 @@ metadata {
 		// indicates that device keeps track of heartbeat (in state.heartbeat)
 		attribute "heartbeat", "string"
 
+		fingerprint profileId: "0104", inClusters: "0000,0003,0004,0005,0006,0B04,0B05", outClusters: "0019", manufacturer: "CentraLite",  model: "3200", deviceJoinName: "Outlet"
+		fingerprint profileId: "0104", inClusters: "0000,0003,0004,0005,0006,0B04,0B05", outClusters: "0019", manufacturer: "CentraLite",  model: "3200-Sgb", deviceJoinName: "Outlet"
+		fingerprint profileId: "0104", inClusters: "0000,0003,0004,0005,0006,0B04,0B05", outClusters: "0019", manufacturer: "CentraLite",  model: "4257050-RZHAC", deviceJoinName: "Outlet"
 		fingerprint profileId: "0104", inClusters: "0000,0003,0004,0005,0006,0B04,0B05", outClusters: "0019"
 	}
 
@@ -40,6 +43,15 @@ metadata {
 		// reply messages
 		reply "zcl on-off on": "on/off: 1"
 		reply "zcl on-off off": "on/off: 0"
+	}
+
+	preferences {
+		section {
+			image(name: 'educationalcontent', multiple: true, images: [
+				"http://cdn.device-gse.smartthings.com/Outlet/US/OutletUS1.png",
+				"http://cdn.device-gse.smartthings.com/Outlet/US/OutletUS2.png"
+				])
+		}
 	}
 
 	// UI tile definitions
@@ -68,6 +80,9 @@ metadata {
 // Parse incoming device messages to generate events
 def parse(String description) {
 	log.debug "description is $description"
+
+	// save heartbeat (i.e. last time we got a message from device)
+	state.heartbeat = Calendar.getInstance().getTimeInMillis()
 
 	def finalResult = zigbee.getKnownDescription(description)
 
@@ -109,6 +124,7 @@ def on() {
 }
 
 def refresh() {
+	sendEvent(name: "heartbeat", value: "alive", displayed:false)
 	zigbee.onOffRefresh() + zigbee.refreshData("0x0B04", "0x050B")
 }
 

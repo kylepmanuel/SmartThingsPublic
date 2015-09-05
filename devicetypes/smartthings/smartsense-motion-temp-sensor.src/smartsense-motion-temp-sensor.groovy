@@ -21,6 +21,7 @@ metadata {
 		capability "Battery"
         capability "Temperature Measurement"
 		capability "Refresh"
+		capability "Sensor"
         
         command "enrollResponse"
 
@@ -65,12 +66,6 @@ metadata {
 		}
 		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"refresh.refresh", icon:"st.secondary.refresh"
-		}
-
-		//This tile is a temporary fix so users can select main tiles again
-		standardTile("CONVERTED-MULTI-device.motion", "device.motion", width: 4, height: 4) {
-			state "active", label:'motion', icon:"st.motion.motion.active", backgroundColor:"#53a7c0"
-			state "inactive", label:'no motion', icon:"st.motion.motion.inactive", backgroundColor:"#ffffff"
 		}
 
 		main(["motion", "temperature"])
