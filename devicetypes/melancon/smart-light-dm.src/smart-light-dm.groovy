@@ -23,24 +23,27 @@ metadata {
 		command "sync"
 	}
 
-	standardTile("switch", "device.switch", width:2, height: 2, canChangeIcon: true) {
-		state "on", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
-		state "off", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
-		state "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
-		state "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
-	}
+ 	tiles(scale: 2){
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+				attributeState "on", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
+				attributeState "off", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
+				attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
+				attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
+			}
+			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+				attributeState "level", action:"switch level.setLevel"
+			}
+		}
 
-	standardTile("sync", "device.level", decoration: "flat", inactiveLabel: false) {
-		state "default", label:"Sync", action:"sync", icon:"st.secondary.refresh-icon"
-	}
-
-	controlTile("levelControl", "device.level", "slider", height: 1, width: 3, range:"(0..100)") {
-		state "default", action:"switch level.setLevel"
-	}
+        standardTile("sync", "device.level", width: 2, height: 2, decoration: "flat", inactiveLabel: false) {
+            state "default", label:"Sync", action:"sync", icon:"st.secondary.refresh-icon"
+        }
+    }
 
 	main(["switch"])
 
-	details(["switch", "sync", "levelControl"])
+	details(["switch", "sync"])
 }
 
 def parse(description) {

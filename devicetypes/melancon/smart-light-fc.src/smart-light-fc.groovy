@@ -20,49 +20,39 @@ metadata {
 		capability "Switch"
 		capability "Switch Level"
 		capability "Color Control"
+        capability "Color Temperature"
 
 		command "sync"
 		command "resetColor"
-
-		// color temperature control capability
-		command "setColorTemperature", ["number"]
-		attribute "colorTemperature", "number"
-        
+      
         // color control mode capability
         command "setColorControlMode", ["string"]
         attribute "colorControlMode", "enum", ["color control", "color temperature control"]
 	}
+ 	tiles(scale: 2){
+		multiAttributeTile(name:"switch", type: "lighting", width: 6, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+				attributeState "on", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
+				attributeState "off", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
+				attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
+				attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
+			}
+			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+				attributeState "level", action:"switch level.setLevel"
+			}
+			tileAttribute ("device.color", key: "COLOR_CONTROL") {
+				attributeState "color", action:"color control.setColor"
+			}
+		}
 
-	standardTile("switch", "device.switch", width:2, height: 2, canChangeIcon: true) {
-		state "on", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
-		state "off", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
-		state "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.multi-light-bulb-on", backgroundColor:"#79b821", nextState:"turningOff"
-		state "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.multi-light-bulb-off", backgroundColor:"#ffffff", nextState:"turningOn"
-	}
-
-	standardTile("reset", "device.level", decoration: "flat", inactiveLabel: false) {
-		state "default", label:"Reset Color", action:"reset", icon:"st.illuminance.illuminance.dark"
-	}
-
-	standardTile("sync", "device.level", decoration: "flat", inactiveLabel: false) {
-		state "default", label:"Sync", action:"sync", icon:"st.secondary.refresh-icon"
-	}
-
-	controlTile("levelControl", "device.level", "slider", height: 1, width: 3, range:"(0..100)") {
-		state "default", action:"switch level.setLevel"
-	}
-
-	controlTile("colorTemperatureControl", '${-> device?.currentValue("colorControlMode") == "color control" ? "device.colorTemperature" : "device.color"}', '${-> device?.currentValue("colorControlMode") == "color control" ? "color" : "slider"}', height: 1, width: 3, range:"(153..500)") {
-		state "default", action:"setColorTemperature"
-	}
-
-	controlTile("colorControl", "device.color", "color", height: 3, width: 3) {
-		state "default", action:"color control.setColor"
-	}
+        standardTile("sync", "device.level", width: 2, height: 2, decoration: "flat", inactiveLabel: false) {
+            state "default", label:"Sync", action:"sync", icon:"st.secondary.refresh-icon"
+        }
+    }
 
 	main(["switch"])
 
-	details( ["switch", "sync", "levelControl", "reset", "colorControl", "colorTemperatureControl"])
+	details( ["switch", "sync"])
 
 	preferences()
 }
