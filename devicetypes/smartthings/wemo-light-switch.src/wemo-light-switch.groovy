@@ -52,11 +52,11 @@ metadata {
         }
 
         standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
-            state "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#79b821", nextState:"turningOff"
+            state "on", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
             state "off", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
-            state "turningOn", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#79b821", nextState:"turningOff"
+            state "turningOn", label:'${name}', action:"switch.off", icon:"st.Home.home30", backgroundColor:"#00A0DC", nextState:"turningOff"
             state "turningOff", label:'${name}', action:"switch.on", icon:"st.Home.home30", backgroundColor:"#ffffff", nextState:"turningOn"
-            state "offline", label:'${name}', icon:"st.Home.home30", backgroundColor:"#ff0000"
+            state "offline", label:'${name}', icon:"st.Home.home30", backgroundColor:"#cccccc"
         }
 
         standardTile("refresh", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat") {
@@ -86,7 +86,7 @@ def parse(String description) {
 	def bodyString = msg.body
 	if (bodyString) {
 		unschedule("setOffline")
-		def body = new XmlSlurper().parseText(bodyString)
+        def body = new XmlSlurper().parseText(bodyString.replaceAll("[^\\x20-\\x7e]", ""))
 
 		if (body?.property?.TimeSyncRequest?.text()) {
 			log.trace "Got TimeSyncRequest"
@@ -273,7 +273,7 @@ User-Agent: CyberGarage-HTTP/1.0
 def poll() {
 log.debug "Executing 'poll'"
 if (device.currentValue("currentIP") != "Offline")
-    runIn(10, setOffline)
+    runIn(30, setOffline)
 new physicalgraph.device.HubAction("""POST /upnp/control/basicevent1 HTTP/1.1
 SOAPACTION: "urn:Belkin:service:basicevent:1#GetBinaryState"
 Content-Length: 277
